@@ -45,7 +45,7 @@
                br.item_code as item_code, i.item_name as item_name,
                br.required_quantity as required_quantity
         from tbl_bom_registration br , tbl_bom b , tbl_items i
-        where br.bom_code = b.bom_code and br.item_code = i.item_code and product_name like (#{product_name})
+        where br.bom_code = b.bom_code and br.item_code = i.item_code and b.product_name like (#{product_name})
         ORDER BY bom_registration_code
     </select>
 

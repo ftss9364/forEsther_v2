@@ -12,48 +12,42 @@ import java.util.Map;
 
 @RestController
 @Log4j2
-@RequestMapping("/boms/*")
+@RequestMapping("/boms")
 @AllArgsConstructor
 public class BomController {
     private BomService service;
 
-    @GetMapping("data")
+    @GetMapping("/data")
     public List<BomVO> bomList() {
         return service.getListOrigin();
     }
 
-    @GetMapping("data/search/{product_name}")
-    public List<BomVO> bomSearch(@PathVariable String product_name) {
-        product_name = "%" + product_name + "%";
-        System.out.println("==============================");
-        System.out.println(product_name);
-        return service.get(product_name);
-    }
 
-    @GetMapping("data/{bom_code}")
+
+    @GetMapping("/data/{bom_code}")
     public List<BomRegistrationVO> getChildItem(@PathVariable String bom_code){
         return service.getBomRegistration(bom_code);
     }
 
-    @DeleteMapping("{bom_code}")
+    @DeleteMapping("/{bom_code}")
     public void bomRemove(@PathVariable String bom_code) {
         service.removeBom(bom_code);
 
     }
 
-    @GetMapping("product/item/data")
+    @GetMapping("/product/item/data")
     public List<ItemVO> ProductItemList() {
 
         return service.searchProduct("%%");
     }
 
-    @GetMapping("product/item/data/{item_name}")
+    @GetMapping("/product/item/data/{item_name}")
     public List<ItemVO> searchProductItemList(@PathVariable String item_name) {
         item_name = "%" + item_name + "%";
         return service.searchProduct(item_name);
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> bomAdd(@RequestBody Map<String, Object> requestData) {
         String productName = (String)requestData.get("productName");
         String itemCode = (String)requestData.get("itemCode");
@@ -101,7 +95,7 @@ public class BomController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("register/data/{bom_code}")
+    @GetMapping("/register/data/{bom_code}")
     public ResponseEntity<Map<String, Object>> bomDetails(@PathVariable String bom_code) {
         List<ItemVO> itemList = service.getItemList();
 
@@ -130,7 +124,7 @@ public class BomController {
 
     }
 
-    @PostMapping("register/search")
+    @PostMapping("/register/search")
     public ResponseEntity<Map<String, Object>> itemSearch(@RequestBody Map<String, Object> requestData) {
         String itemName = (String)requestData.get("itemName");
         List<String> ItemCodeArr = (List<String>)requestData.get("ItemCodeArr");
@@ -155,7 +149,7 @@ public class BomController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("modify")
+    @PostMapping("/modify")
     public void registerBom(@RequestBody List<Map<String, String>> rowDataList) {
         System.out.println(rowDataList);
         List<BomRegistrationVO> originList = service.getBomRegistration(rowDataList.get(0).get("bomCode"));
@@ -217,5 +211,11 @@ public class BomController {
 
         }
 
+    }
+
+    @GetMapping("/search/{product_name}")
+    public List<BomVO> searchBom(@PathVariable String product_name) {
+        product_name = "%" + product_name + "%";
+        return service.get(product_name);
     }
 }

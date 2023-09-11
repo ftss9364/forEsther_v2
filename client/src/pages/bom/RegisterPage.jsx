@@ -70,7 +70,7 @@ const RegisterPage = () => {
   const addItem = (data) => {
     const temp = {
       bom_registration_code: '',
-      bom_code: childItemList[0].bom_code,
+      bom_code: bom_code,
       item_code: data.item_code,
       item_vo: data,
       required_quantity: 0,

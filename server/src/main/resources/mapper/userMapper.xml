@@ -1,0 +1,33 @@
+<!-- src/main/resources/mapper/UserMapper.xml -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.foresther.www.data.repository.UserMapper">
+    <!--    <resultMap id="userResultMap" type="com.springboot.security.data.entity.User">-->
+    <!--        &lt;!&ndash; Mapping between entity fields and database columns &ndash;&gt;-->
+    <!--        <id property="id" column="id" />-->
+    <!--        <result property="uid" column="uid" />-->
+    <!--        &lt;!&ndash; Add more mappings as needed &ndash;&gt;-->
+    <!--    </resultMap>-->
+
+    <resultMap id="userResultMap" type="com.foresther.www.data.entity.User">
+
+        <result property="id" column="id" />
+        <result property="password" column="password" />
+        <result property="name" column="name" />
+        <collection property="roles" resultMap="Roles" />
+    </resultMap>
+
+    <resultMap id="Roles" type="com.foresther.www.data.entity.Roles">
+        <result property="role" column="roles" />
+    </resultMap>
+
+    <!-- SQL query to select a user by uid -->
+    <select id="getById" resultMap="userResultMap" >
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <insert id="insertUser" parameterType="com.foresther.www.data.entity.User">
+        INSERT INTO users (id, password, name, roles)
+        VALUES (#{id}, #{password}, #{name}, #{roles[0]})
+    </insert>
+
+</mapper>
