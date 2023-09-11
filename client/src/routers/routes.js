@@ -4,6 +4,7 @@ import ItemRegister from '../pages/item/RegisterPage';
 import Bom from '../pages/bom/ListPage';
 import URegister from "../pages/unitprice/Register";
 import BomRegister from "../pages/bom/RegisterPage"
+import SignUp from '../pages/sign/SignUp';
 
 const routes = [
     {
@@ -33,6 +34,10 @@ const routes = [
     {
         path: '/boms/:bom_code',
         component: BomRegister
+    },
+    {
+        path: '/signup',
+        component: SignUp
     },
 ];
 
