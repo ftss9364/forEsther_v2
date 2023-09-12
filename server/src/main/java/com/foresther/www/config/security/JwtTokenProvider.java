@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ public class JwtTokenProvider {
 
     private final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
     private final UserDetailsService userDetailsService;
+
+    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Value("${springboot.jwt.secret}")
     private String secretKey = "secretKey";
@@ -75,7 +78,12 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         LOGGER.info("[resolveToken] HTTP 헤더에서 Token 값 추출");
-        return request.getHeader("X-AUTH-TOKEN");
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")){
+            return bearerToken.substring(7);
+        }
+        return null;
+        //return request.getHeader("X-AUTH-TOKEN");
     }
 
     public boolean validateToken(String token) {

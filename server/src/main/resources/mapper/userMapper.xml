@@ -25,9 +25,15 @@
         SELECT * FROM users WHERE id = #{id}
     </select>
 
+<!--    <insert id="insertUser" parameterType="com.foresther.www.data.entity.User">-->
+<!--        INSERT INTO users (id, password, name, roles)-->
+<!--        VALUES (#{id}, #{password}, #{name}, #{roles[0]})-->
+<!--    </insert>-->
+
     <insert id="insertUser" parameterType="com.foresther.www.data.entity.User">
-        INSERT INTO users (id, password, name, roles)
-        VALUES (#{id}, #{password}, #{name}, #{roles[0]})
+        INSERT INTO users (id, password, name)
+        VALUES (#{id}, #{password}, #{name})
     </insert>
+
 
 </mapper>

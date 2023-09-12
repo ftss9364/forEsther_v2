@@ -1,8 +1,8 @@
 package com.foresther.www.sign;
 
-import com.foresther.www.data.dto.SignInResultDto;
-import com.foresther.www.data.dto.SignUpRequestDto;
-import com.foresther.www.data.dto.SignUpResultDto;
+import com.foresther.www.config.security.JwtTokenProvider;
+import com.foresther.www.data.dto.*;
+import com.foresther.www.data.entity.User;
 import com.foresther.www.service.SignService;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,16 +26,38 @@ public class SignController {
     private final Logger LOGGER = LoggerFactory.getLogger(SignController.class);
     private final SignService signService;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
+    private final UserDetailsService userDetailsService;
+
     @Autowired
-    public  SignController(SignService signService) {
+    public  SignController(SignService signService, JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
         this.signService = signService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsService = userDetailsService;
     }
 
+//    @PostMapping(value = "/sign-in")
+//    public SignInResultDto signIn(
+//            @ApiParam(value = "ID", required = true) @RequestParam String id,
+//            @ApiParam(value = "Password", required = true) @RequestParam String password)
+//            throws RuntimeException {
+//        LOGGER.info("[signIn] 로그인을 시도하고 있습니다. id : {}, pw : ****", id);
+//        SignInResultDto signInResultDto = signService.signIn(id, password);
+//
+//        if(signInResultDto.getCode() == 0) {
+//            LOGGER.info("[signIn] 정상적으로 로그인되었습니다. id : {}, token : {}", id,
+//                    signInResultDto.getToken());
+//        }
+//
+//        return signInResultDto;
+//    }
+
     @PostMapping(value = "/sign-in")
-    public SignInResultDto signIn(
-            @ApiParam(value = "ID", required = true) @RequestParam String id,
-            @ApiParam(value = "Password", required = true) @RequestParam String password)
+    public ResponseEntity<?> signIn(@RequestBody SignInRequestDto signInRequestDto)
             throws RuntimeException {
+        String id = signInRequestDto.getId();
+        String password = signInRequestDto.getPassword();
         LOGGER.info("[signIn] 로그인을 시도하고 있습니다. id : {}, pw : ****", id);
         SignInResultDto signInResultDto = signService.signIn(id, password);
 
@@ -40,7 +66,7 @@ public class SignController {
                     signInResultDto.getToken());
         }
 
-        return signInResultDto;
+        return ResponseEntity.ok(signInResultDto);
     }
 
 //    @PostMapping(value = "/sign-up")
@@ -91,4 +117,49 @@ public class SignController {
 
         return new ResponseEntity<>(map, responseHeaders, httpStatus);
     }
+
+
+//    @GetMapping("/validate-token")
+//    public ResponseEntity<User> validateToken(@RequestHeader("Authorization") String tokenHeader) {
+//        try {
+//            // 헤더에서 토큰을 추출합니다.
+//            String token = tokenHeader.replace("Bearer ", "");
+//
+//            // 토큰을 검증하고 사용자 정보를 가져옵니다.
+//            UserDetails userDetails = jwtTokenUtil.getUserDetailsFromToken(token);
+//
+//            // 사용자 정보를 반환합니다.
+//            return ResponseEntity.ok(new User(userDetails.getUsername(), userDetails.getAuthorities()));
+//        } catch (Exception e) {
+//            // 토큰이 유효하지 않거나 권한이 없는 경우 처리
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//    }
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<UserProfileResponseDto> getUserProfile(@RequestHeader("Authorization") String tokenHeader) {
+        try {
+            // 헤더에서 토큰을 추출합니다.
+            String token = tokenHeader.replace("Bearer ", "");
+
+
+            // 토큰을 검증하고 사용자 정보를 가져옵니다.
+//            UserDetails userDetails = jwtTokenUtil.getUserDetailsFromToken(token);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(jwtTokenProvider.getUsername(token));
+            System.out.println(userDetails);
+
+            // 사용자 정보를 반환합니다.
+            UserProfileResponseDto userProfileResponseDto = new UserProfileResponseDto();
+            userProfileResponseDto.setUsername(userDetails.getUsername());
+            userProfileResponseDto.setRoles(userDetails.getAuthorities());
+
+            // 사용자 프로필 정보 응답
+            return ResponseEntity.ok(userProfileResponseDto);
+        } catch (Exception e) {
+            // 토큰이 유효하지 않거나 권한이 없는 경우 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+
 }

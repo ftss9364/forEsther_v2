@@ -20,10 +20,13 @@ const ListPage = () => {
   const [tableBody, setTableBody] = useState([]);
   const history = useHistory();
   const [productList, setProductList] = useState([]);
-  
   const styleSheet = {
     marginBottom: "10px",
   }
+
+  console.log(localStorage.token);
+
+  
 
   //현재페이지를 url에 저장하기 위해
   const location = useLocation();
@@ -285,6 +288,10 @@ const ListPage = () => {
     <PageCard>
       <PageHeader>
         <PageTitle value="BOM관리"/>
+        {localStorage.token ? 
+        <h1>로그인 됨</h1> :
+        <h1>로그인 안됨</h1>  
+      }
         <Button buttonClass={"btn-dark"} dataBsToggle={"modal"} dataBsTarget={"#basicModal"} buttonName="신규등록" />
       </PageHeader>
       <div style={{
@@ -379,9 +386,9 @@ const ListPage = () => {
                 {
                   productList.map((data, i) => {
                     if(i === 0) {
-                      return (<option value={data.item_code} selected>{data.item_name}</option>	)
+                      return (<option key={i} value={data.item_code} selected>{data.item_name}</option>	)
                     } else {
-                      return (<option value={data.item_code}>{data.item_name}</option>);
+                      return (<option key={i} value={data.item_code}>{data.item_name}</option>);
                     }
                   })
                 }

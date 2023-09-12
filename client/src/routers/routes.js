@@ -5,6 +5,8 @@ import Bom from '../pages/bom/ListPage';
 import URegister from "../pages/unitprice/Register";
 import BomRegister from "../pages/bom/RegisterPage"
 import SignUp from '../pages/sign/SignUp';
+import SignIn from '../pages/sign/SignIn';
+import UserProfile from '../pages/sign/UserProfile';
 
 const routes = [
     {
@@ -39,6 +41,14 @@ const routes = [
         path: '/signup',
         component: SignUp
     },
+    {
+        path: '/signin',
+        component: SignIn
+    },
+    {
+        path: '/userprofile',
+        component: UserProfile
+    }
 ];
 
 export default routes;

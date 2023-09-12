@@ -6,40 +6,41 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-//import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//@Table
 public class User implements UserDetails {
 
-    //    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    @Column
     private String password;
 
-    //    @Column(nullable = false)
     private String name;
 
-    //    @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private List<String> roles = new ArrayList<>();
+    private List<Roles> roles = new ArrayList<>(); // Roles 객체의 리스트로 역할 정보 관리
+
+//    @Builder.Default
+//    private List<String> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList());
     }
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+//        return this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList());
+//    }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Override
